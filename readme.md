@@ -56,26 +56,26 @@ Plik `sync.json`
 [
   {
     "name": "serial_port.c",
-    "file": true, // Wpis odnosi się do pliku
+    "file": true, // Wpis odnosi się do pliku 
     "paths": [
-      "{staff}/serial.c", // Pełna ścieżka: "C:/Users/Me/Desktop/MyStaff/test/serial.c"
-      "{work}/PLC/{name}" // Nazwa pliku: "serial_port.c"
+      "{staff}/serial.c", // Pełna ścieżka: "C:/Users/Me/Desktop/MyStaff/test/serial.c" 
+      "{work}/PLC/{name}" // Nazwa pliku: "serial_port.c" 
     ]
   },
   {
-    "name": "utils", // Wpis odnosi się do pliku. Domyślnie: "file": true
+    "name": "utils", // Wpis odnosi się do pliku. Domyślnie: "file": true 
     "paths": [
       "{web}/lib/{name}",
-      "#{staff}/python/{name}.py", // Plik wyłączony z synchronizacji
+      "#{staff}/python/{name}.py", // Plik wyłączony z synchronizacji 
       "{work}/PLC/misc.py"
     ]
   },
   {
     "name": "protobuf",
-    "file": false, // Wpis odnosi się do katalogu
+    "file": false, // Wpis odnosi się do katalogu 
     "paths": [
       "{web}/proto/",
-      "{staff}/{name}/" // Nazwa katalogu: "protobuf"
+      "{staff}/{name}/" // Nazwa katalogu: "protobuf" 
     ]
   }
 ]

@@ -1,11 +1,12 @@
 ## 📖 Lipy`Sync`
 
-Ten programik **eliminuje problem rozproszenia bibliotek**, poprzez synchronizację 🔄 wybranych plików oraz całych katalogów, które są porozrzucane po różnych projektach na dysku lokalnym. Dzięki temu unikasz chaosu i ręcznego kopiowania plików.
+Ten programik **eliminuje problem rozproszenia bibliotek**, poprzez synchronizację 🔄 wybranych plików oraz całych katalogów, które są porozrzucane po różnych projektach na kompie _(lokalnie)_. Dzięki temu unikasz chaosu i ręcznego kopiowania plików.
 
 Pozornie centralizacja bibliotek wydaje się świetnym pomysłem. Ułatwia organizację pracy i pozwala uniknąć duplikowania kodu. W praktyce pojawiają się jednak pewne komplikacje:
 
 - Nie zawsze chcemy aktualizować bibliotekę w projekcie, którego dalej nie rozwijamy, ale nadal musi on działać.  
-- Niektóre biblioteki muszą być częścią repozytorium. Kiedy oddajemy/zamykamy projekt, chcemy, aby wszystko było w jednym miejscu, bez konieczności pobierania dodatkowych zależności z zewnętrznych źródeł
+- Niektóre biblioteki muszą być częścią repozytorium. Kiedy oddajemy/zamykamy projekt, chcemy, aby wszystko było w jednym miejscu, bez konieczności pobierania dodatkowych zależności z zewnętrznych źródeł.
+- Lepiej, gdy wszystkie zasoby są w katalogu projektu. Upraszcza to konfigurację (Makefile, CMake), eliminuje problemy ze ścieżkami i wersjami bibliotek oraz poprawia integrację z IDE.
 
 To rozwiązanie sprawdzi się idealnie, jeśli prowadzisz wiele mniejszych projektów i zależy Ci na sprawnym zarządzaniu bibliotekami _(kodem, który pojawia się w wielu projektach)_. Jeśli często wprowadzasz zmiany, chcesz uniknąć bałaganu w kodzie, ale jednocześnie nie masz czasu, by poświęcać godziny na porządkowanie zależności, to narzędzie jest dla Ciebie! Program jest banalnie prosty. Liczy się wydajna i skuteczna praca, bez zbędnej biurokracji. Społeczność open source może robić swoje, ale tutaj priorytetem jest zadowolony klient i dobrze działający projekt zrobiony ⚡**szybko** i 👍**jako tako**.
 

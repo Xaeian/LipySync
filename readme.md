@@ -11,14 +11,12 @@ To rozwiązanie sprawdzi się idealnie, jeśli prowadzisz wiele mniejszych proje
 
 ### 🧐 Problemy!
 
-❌ **Możliwe przypadkowe nadpisania**: jeśli edytujesz dwie wersje biblioteki jednocześnie.
-✅ Unikaj tego, ale jeśli się zdarzy, każda nadpisana wersja jest zapisywana jako kopia zapasowa z datą, więc zawsze możesz odzyskać zmiany.
-
-❌ **Brak izolacji środowiska**: różne projekty mogą wymagać różnych wersji tej samej biblioteki.
-✅ To nie problem! wystarczy utworzyć osobne wpisy dla różnych wersji, dzięki czemu synchronizacja będzie niezależna. Możesz też zakomentować wpisy dla bibliotek, które nie powinny być już aktualizowane.
-
-❌ **Dublowanie kodu na repozytorium**: zamiast jednej kopii biblioteki, masz ich kilka w różnych projektach.
-✅ I tak ma być! Każdy klient powinien mieć swoją wersję biblioteki, bez zależności od innych repozytoriów. Pełna kontrola, zero niepotrzebnych komplikacji.
+- ❌ **Możliwe przypadkowe nadpisania**: jeśli edytujesz dwie wersje biblioteki jednocześnie.
+- ✅ Unikaj tego, ale jeśli się zdarzy, każda nadpisana wersja jest zapisywana jako kopia zapasowa z datą, więc zawsze możesz odzyskać zmiany.
+- ❌ **Brak izolacji środowiska**: różne projekty mogą wymagać różnych wersji tej samej biblioteki.
+- ✅ To nie problem! wystarczy utworzyć osobne wpisy dla różnych wersji, dzięki czemu synchronizacja będzie niezależna. Możesz też zakomentować wpisy dla bibliotek, które nie powinny być już aktualizowane.
+- ❌ **Dublowanie kodu na repozytorium**: zamiast jednej kopii biblioteki, masz ich kilka w różnych projektach.
+- ✅ I tak ma być! Każdy klient powinien mieć swoją wersję biblioteki, bez zależności od innych repozytoriów. Pełna kontrola, zero niepotrzebnych komplikacji.
 
 ### 🤔 Alternatywy?
 

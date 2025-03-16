@@ -6,7 +6,7 @@ Pozornie centralizacja bibliotek wydaje się świetnym pomysłem. Ułatwia organ
 
 - Nie zawsze chcemy aktualizować bibliotekę w projekcie, którego dalej nie rozwijamy, ale nadal musi on działać.  
 - Niektóre biblioteki muszą być częścią repozytorium. Kiedy oddajemy/zamykamy projekt, chcemy, aby wszystko było w jednym miejscu, bez konieczności pobierania dodatkowych zależności z zewnętrznych źródeł.
-- Lepiej, gdy wszystkie zasoby są w katalogu projektu. Upraszcza to konfigurację (Makefile, CMake), eliminuje problemy ze ścieżkami i wersjami bibliotek oraz poprawia integrację z IDE.
+- Lepiej, gdy wszystkie zasoby są w katalogu projektu. Upraszcza to konfigurację _(Makefile, CMake)_, eliminuje problemy ze ścieżkami i wersjami bibliotek oraz poprawia integrację z IDE.
 
 To rozwiązanie sprawdzi się idealnie, jeśli prowadzisz wiele mniejszych projektów i zależy Ci na sprawnym zarządzaniu bibliotekami _(kodem, który pojawia się w wielu projektach)_. Jeśli często wprowadzasz zmiany, chcesz uniknąć bałaganu w kodzie, ale jednocześnie nie masz czasu, by poświęcać godziny na porządkowanie zależności, to narzędzie jest dla Ciebie! Program jest banalnie prosty. Liczy się wydajna i skuteczna praca, bez zbędnej biurokracji. Społeczność open source może robić swoje, ale tutaj priorytetem jest zadowolony klient i dobrze działający projekt zrobiony ⚡**szybko** i 👍**jako tako**.
 
@@ -27,7 +27,7 @@ Oczywiście można podejść do tego bardziej profesjonalnie, poprzez:
 - Korzystanie z Git **Submodules**, co umożliwia śledzenie wersji biblioteki w repozytorium.
 - Zewnętrzne menedżery pakietów _(`pip`, `npm`, `cargo`)_, które ułatwiają zarządzanie zależnościami.
 
-Jeśli któreś z naszych bibliotek doczekają się stabilnej wersji, któej nie zmieniamy chaotycznie co projekt oraz będą wystarczjąco fajne dobrze jest przmyśleć jendo z powyższych rozwiązań
+Jeśli któreś z naszych bibliotek doczekają się stabilnej wersji, któej nie zmieniamy chaotycznie co projekt oraz będą wystarczjąco fajne dobrze jest przmyśleć jendo z powyższych rozwiązań.
 
 ### ⚙️ Config 
 
@@ -95,5 +95,5 @@ Aby zsynchronizować _(czyli zaktualizować starsze wersje bibliotek)_, wystarcz
 ```bash
 py main.py --update  
 ./libpysync.exe -u  
-libpysync -u  
+libpysync -u
 ```

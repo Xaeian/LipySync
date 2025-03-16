@@ -24,11 +24,20 @@ def BackupFile(src:str, name:str, backup_path:str="./backups"):
   pathlib.Path(path).mkdir(parents=True, exist_ok=True)
   shutil.copyfile(src, f"{path}/{name}")
 
-def FileList(path:str):
-  folder_path = pathlib.Path(path)
-  return [file.name for file in folder_path.iterdir() if file.is_file()]
+def FileList(path: str):
+  fpath = pathlib.Path(path)
+  if not fpath.exists():
+    raise FileNotFoundError(f"Folder {xn.Color.ORANGE}{path}{xn.Color.END} doesn't exist")
+  if not fpath.is_dir():
+    raise NotADirectoryError(f"{xn.Color.ORANGE}{path}{xn.Color.END} isn't directory")
+  return [file.name for file in fpath.iterdir() if file.is_file()]
 
 def IntersectionList(lists: list[list]) -> set:
   if not lists:
     return []
   return list(set(lists[0]).intersection(*lists[1:]))
+
+def UnionList(lists: list[list]) -> list:
+  if not lists:
+    return []
+  return list(set().union(*lists))

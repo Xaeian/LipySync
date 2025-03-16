@@ -399,10 +399,7 @@ class IcoText():
   ERR = f"{Color.RED}ERR{Color.END}"
   WRN = f"{Color.YELLOW}WRN{Color.END}"
   OK  = f"{Color.GREEN}INF{Color.END}"
-  DOC = f"{Color.CYAN}INF{Color.END}"
-  YEA = f"{Color.CYAN}INF{Color.END}"
-
-class Ico(IcoText):
-  pass
-
+  DOC = f"{Color.MAGENTA}INF{Color.END}"
+  YEA = f"{Color.GREEN}YEA{Color.END}"
+  
 #------------------------------------------------------------------------------

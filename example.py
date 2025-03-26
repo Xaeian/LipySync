@@ -14,7 +14,6 @@ mydict = {
 sync = [
   {
     "name": "serial_port.c",
-    "file": True,
     "paths": [
       "{staff}/serial.c",
       "{work}/PLC/{name}"
@@ -30,7 +29,6 @@ sync = [
   },
   {
     "name": "protobuf",
-    "file": False,
     "paths": [
       "{web}/proto/",
       "{staff}/{name}/"

@@ -31,9 +31,11 @@ Jeśli któreś z naszych bibliotek doczekają się stabilnej wersji, któej nie
 
 ### ⚙️ Config 
 
-Plik **`sync.json`** definiuje konfigurację synchronizacji plików i folderów bibliotecznych. Każdy obiekt w tabeli określa nazwę `name` biblioteki, pole `file` typu `true`/`false` określającej czy chodzi o plik czy katalog oraz listę ścieżek `paths`, które podlegają synchronizacji. Dodatkowo, ścieżki mogą być zapisane w skróconej formie przy użyciu pliku **`dict.ini`**, w którym definiowane są aliasy dla często powtarzających się lokalizacji. W ścieżkach w `sync.json` można odwoływać się do tych aliasów za pomocą notacji `{key}`. Jeżeli w ścieżce znajduje się znak `#` na początku, to jest ona traktowana jako zakomentowana i nie będzie brana pod uwagę w synchronizacji.
+Plik **`sync.json`** definiuje konfigurację synchronizacji plików i folderów bibliotecznych. Każdy obiekt w tabeli określa nazwę `name` biblioteki oraz listę ścieżek `paths`, które podlegają synchronizacji. Program automatycznie rozróżnia, czy biblioteka jest plikiem czy katalogiem, ale wszystkie ścieżki muszą być tego samego typu _(plikami, albo katalogami)_.
 
-W przypadku plików możemy dodać pole `whiteList`, które umożliwi synchronizację tylko wskazanych plików, lub `blackList`, które wykluczy określone pliki. Natomiast przy synchronizacji katalogów nazwy plików muszą być identyczne!
+W przypadku katalogów możemy dodać pole `whiteList`, które umożliwi synchronizację tylko wskazanych plików, lub `blackList`, które wykluczy określone pliki. Podczas synchronizacji katalogów nazwy plików muszą być identyczne!
+
+Dodatkowo, ścieżki mogą być zapisane w skróconej formie przy użyciu pliku **`dict.ini`**, w którym definiowane są aliasy dla często powtarzających się lokalizacji. W ścieżkach w `sync.json` można odwoływać się do tych aliasów za pomocą notacji `{key}`. Jeżeli w ścieżce znajduje się znak `#` na początku, to jest ona traktowana jako zakomentowana i nie będzie brana pod uwagę w synchronizacji.
 
 #### Example
 
@@ -54,15 +56,14 @@ Plik `sync.json`
 ```json
 [
   {
-    "name": "serial_port.c",
-    "file": true, // Wpis odnosi się do pliku 
+    "name": "serial_port.c", // Wpis odnosi się do pliku 
     "paths": [
       "{staff}/serial.c", // Pełna ścieżka: "C:/Users/Me/Desktop/MyStaff/test/serial.c" 
       "{work}/PLC/{name}" // Nazwa pliku: "serial_port.c" 
     ]
   },
   {
-    "name": "utils", // Wpis odnosi się do pliku. Domyślnie: "file": true 
+    "name": "utils", // Wpis odnosi się do pliku 
     "paths": [
       "{web}/lib/{name}",
       "#{staff}/python/{name}.py", // Plik wyłączony z synchronizacji 
@@ -70,8 +71,7 @@ Plik `sync.json`
     ]
   },
   {
-    "name": "protobuf",
-    "file": false, // Wpis odnosi się do katalogu 
+    "name": "protobuf", // Wpis odnosi się do katalogu 
     "paths": [
       "{web}/proto/",
       "{staff}/{name}/" // Nazwa katalogu: "protobuf" 

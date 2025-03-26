@@ -14,9 +14,10 @@ parser.add_argument("-v", "--version", action="store_true", help="Wersję progra
 args = parser.parse_args()
 
 if args.version:
+  # 1.2.0: Auto-detect file/folder + paths unique only in lib
   # 1.1.0: Union files for SyncFolder
   # 1.0.0: Init + (whiteList & blackList)
-  print(f"LipySync {Color.BLUE}1.1.0{Color.END}")
+  print(f"LipySync {Color.BLUE}1.2.0{Color.END}")
   print(f"Repo: {Color.GREY}https://{Color.END}github.com/{Color.TEAL}Xaeian{Color.END}/LipySync")
   sys.exit(0)
 
@@ -39,22 +40,31 @@ sync = xn.ReplaceMap(sync, mydict, "{", "}")
 for sy in sync:
   sy["paths"] = xn.ReplaceMap(sy["paths"], { "name": sy["name"] }, "{", "}")
 
-name_set, path_set = set(), set()
-
 # Validation to ensure names & paths are unique
+name_set = set()
 for sy in sync:
   if sy["name"] in name_set:
     print(f"{Ico.ERR} Synchronized library name {Color.RED}{sy["name"]}{Color.END} is duplicated")
     sys.exit(0)
   name_set.add(sy["name"])
+  path_set = set()
+  cnt_file = 0
+  cnt_dir = 0
   for path in sy["paths"]:
     if path.startswith("#"):
       sy["paths"].remove(path)
       continue
+    if os.path.isfile(path): cnt_file += 1
+    elif os.path.isdir(path): cnt_dir += 1
+    else:
+      print(f"{Ico.ERR} Path {Color.ORANGE}{path}{Color.END} in library {Color.RED}{sy["name"]}{Color.END} doesn't exist")
     if path in path_set:
-      print(f"{Ico.ERR} Path name {Color.RED}{path}{Color.END} appears multiple times")
+      print(f"{Ico.ERR} Path {Color.ORANGE}{path}{Color.END} in library {Color.RED}{sy["name"]}{Color.END} appears multiple times")
       sys.exit(0)
     path_set.add(path)
+  if cnt_file and cnt_dir:
+    print(f"{Ico.ERR} Library {Color.RED}{sy["name"]}{Color.END} contains files and folders paths")
+  sy["file"] = True if cnt_file else False 
 
 update_flag = False
 
@@ -93,7 +103,7 @@ def SyncFile(name:str, paths:list[str], must_exist:bool=True):
         print(f"{Ico.WRN} File {Color.GREY}{file}{Color.END} needs update ({Color.TEAL}{dt}{Color.END})")
         if ustamp == cstamp:
           print(f"{Ico.ERR} But it was created recently, make sure it's not actually newer!")
-    elif args.update and file !=lats_file:
+    elif args.update and file != lats_file:
       print(f"{Ico.OK} File {Color.GREY}{file}{Color.END} is up-to-date")
 
 def SyncFolder(name:str, paths:list[str], whitelist:list[str]|None=None, blacklist:list[str]=[]):
@@ -103,7 +113,7 @@ def SyncFolder(name:str, paths:list[str], whitelist:list[str]|None=None, blackli
     print(f"{Ico.ERR} {e}")
     sys.exit(0)
   files = utils.UnionList(files)
-  if whitelist: files = utils.IntersectionList([files].append(whitelist))
+  if whitelist: files = utils.IntersectionList([files] + [whitelist])
   files = [file for file in files if file not in blacklist]
   for file in files:
     files_path = [f"{path}/{file}" for path in paths]

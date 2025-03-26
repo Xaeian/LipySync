@@ -9,12 +9,13 @@ xn.FIX_PATH = True
 
 parser = argparse.ArgumentParser(description="PySync")
 parser.add_argument("-u", "--update", action="store_true", help="Update libraries to latest version (most recently modified)")
+parser.add_argument("-i", "--info", action="store_true", help="Displays a list of all synchronized files (not quiet)")
 parser.add_argument("-e", "--example", action="store_true", help="Create example configuration files 'dict.ini' and 'sync.ini'")
-parser.add_argument("-v", "--version", action="store_true", help="Wersję programu 'wizard' oraz inne informacje")
+parser.add_argument("-v", "--version", action="store_true", help="Program version and repository location")
 args = parser.parse_args()
 
 if args.version:
-  # 1.2.0: Auto-detect file/folder + paths unique only in lib
+  # 1.2.0: Auto-detect file/folder + info + paths unique lib only
   # 1.1.0: Union files for SyncFolder
   # 1.0.0: Init + (whiteList & blackList)
   print(f"LipySync {Color.BLUE}1.2.0{Color.END}")
@@ -82,7 +83,7 @@ def SyncFile(name:str, paths:list[str], must_exist:bool=True):
   update_stamps = [os.path.getmtime(path) for path in paths]
   create_stamps = [os.path.getctime(path) for path in paths]
   dts = [datetime.fromtimestamp(stamp).strftime('%Y-%m-%d %H:%M:%S') for stamp in update_stamps]
-  if xn.isUniform(hashs): return
+  if xn.isUniform(hashs) and not args.info: return
   stamp_max = max(update_stamps)
   id = update_stamps.index(stamp_max)
   lats_hash = hashs[id]
@@ -103,7 +104,7 @@ def SyncFile(name:str, paths:list[str], must_exist:bool=True):
         print(f"{Ico.WRN} File {Color.GREY}{file}{Color.END} needs update ({Color.TEAL}{dt}{Color.END})")
         if ustamp == cstamp:
           print(f"{Ico.ERR} But it was created recently, make sure it's not actually newer!")
-    elif args.update and file != lats_file:
+    elif (args.update or args.info) and file != lats_file:
       print(f"{Ico.OK} File {Color.GREY}{file}{Color.END} is up-to-date")
 
 def SyncFolder(name:str, paths:list[str], whitelist:list[str]|None=None, blacklist:list[str]=[]):

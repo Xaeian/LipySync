@@ -4,26 +4,125 @@ from typing import Iterable, Any
 #------------------------------------------------------------------------------ Files
 
 FIX_PATH = False
+ONEFILE_PACK = False
 
-def FixPath(path:str):
+def FixPath(path:str, fix:bool|None=True, onefile_pack:bool|None=None) -> str:
+  if fix is None: fix = FIX_PATH
+  if onefile_pack is None: onefile_pack = ONEFILE_PACK
+  if onefile_pack and hasattr(sys, '_MEIPASS'):
+    path = os.path.join(sys._MEIPASS, path)
   path = path.replace("\\", "/")
-  if os.path.isabs(path): return path
-  path = path.lstrip("./")
-  if getattr(sys, 'frozen', False): path = os.path.dirname(sys.executable).replace("\\", "/") + "/" + path
-  elif __file__: path = os.path.dirname(__file__).replace("\\", "/") + "/" + path
+  path = re.sub(r'/+', '/', path)
+  while '/./' in path:
+    path = path.replace('/./', '/')
+  if not fix or os.path.isabs(path):
+    return path
+  path = ReplaceStart(path, "./", "")
+  if getattr(sys, 'frozen', False):
+    path = os.path.dirname(sys.executable).replace("\\", "/") + "/" + path
+  elif __file__:
+    path = os.path.dirname(__file__).replace("\\", "/") + "/" + path
   return path
+
+def LocalPath(path:str, base:str|None=None, prefix:str="") -> str:
+  path = os.path.abspath(path).replace("\\", "/")
+  if base is None:
+    if getattr(sys, 'frozen', False):
+      base = os.path.dirname(sys.executable)
+    else:
+      try:
+        base = os.path.dirname(os.path.abspath(__file__))
+      except NameError:
+        base = os.getcwd()
+  base = os.path.abspath(base).replace("\\", "/")
+  try:
+    rel = os.path.relpath(path, base).replace("\\", "/")
+    if not rel.startswith(".."):
+      if prefix and not rel.startswith(prefix):
+        rel = prefix + rel
+      return rel
+  except ValueError: pass
+  return path
+
+class DIR():
+
+  @staticmethod
+  def Create(path:str, fix:bool|None=None):
+    path = FixPath(path, fix)
+    if not os.path.exists(path): os.makedirs(path)
+
+  @staticmethod
+  def Exists(path:str, fix:bool|None=None, onefile_pack:bool|None=None):
+    path = FixPath(path, fix, onefile_pack)
+    if os.path.exists(path) and os.path.isdir(path): return True
+    else: return False
+
+  @staticmethod
+  def Remove(path:str, fix:bool|None=None):
+    path = FixPath(path, fix)
+    for root, dirs, files in os.walk(path, topdown=False):
+      for file in files:
+        os.remove(os.path.join(root, file))
+      for dir in dirs:
+        os.rmdir(os.path.join(root, dir))
+    os.rmdir(path)
+
+class FILE:
+
+  @staticmethod
+  def Exists(path:str, fix:bool|None=None, onefile_pack:bool|None=None) -> bool:
+    path = FixPath(path, fix, onefile_pack)
+    if os.path.exists(path) and os.path.isfile(path): return True
+    else: return False
+
+  @staticmethod
+  def Remove(path:str, fix:bool|None=None, onefile_pack:bool|None=None) -> bool:
+    path = FixPath(path, fix, onefile_pack)
+    if FILE.Exists(path):
+      os.remove(path)
+      return True
+    return False
+
+  @staticmethod
+  def Load(path:str, fix:bool|None=None, onefile_pack:bool|None=None, binary=False) -> str:
+    path = FixPath(path, fix, onefile_pack)
+    if not os.path.exists(path): return "" 
+    try:
+      with open(path, "rb" if binary else "r", encoding="utf-8") as file:
+        return file.read()
+    except Exception as e:
+      print(f"Error loading text file: {e}")
+      return ""
+  
+  @staticmethod
+  def LoadLines(path:str, fix:bool|None=None, onefile_pack:bool|None=None) -> list[str]:
+    path = FixPath(path, fix, onefile_pack)
+    if not os.path.exists(path): return []
+    try:
+      with open(path, "r", encoding="utf-8") as file:
+        return file.readlines()
+    except Exception as e:
+      print(f"Error loading text file: {e}")
+      return []
+
+  @staticmethod
+  def Save(path:str, content:str, fix:bool|None=None, binary=False):
+    path = FixPath(path, fix)
+    try:
+      with open(path, "wb" if binary else "w", encoding="utf-8") as file:
+        file.write(content)
+    except (TypeError, OSError) as e:
+      print(f"Error saving text file: {e}") 
 
 class INI:
 
   @staticmethod
-  def Load(path:str, fix:bool|None=None) -> dict:
+  def Load(path:str, fix:bool|None=None, onefile_pack:bool|None=None) -> dict:
     path = path.removesuffix('.ini') + '.ini'
-    if fix is None: fix = FIX_PATH
-    if fix: path = FixPath(path)
-    if not os.path.exists(path):
-      return {}
+    path = FixPath(path, fix, onefile_pack)
+    if not os.path.exists(path): return {}
     try:
-      with open(path, 'r', encoding="utf-8") as file:
+      with open(path, "r", encoding="utf-8") as file:
         content = file.read()
     except Exception:
       return {}
@@ -67,8 +166,7 @@ class INI:
   @staticmethod
   def Save(path:str, data:dict, fix:bool|None=None):
     path = path.removesuffix(".ini") + ".ini"
-    if fix is None: fix = FIX_PATH
-    if fix: path = FixPath(path)
+    path = FixPath(path, fix)
     try:
       with open(path, "w", encoding="utf-8") as file:
         for key, value in data.items():
@@ -98,12 +196,10 @@ class INI:
 class CSV:
 
   @staticmethod
-  def Load(path:str, delimiter:str=",", types:dict=None, fix:bool|None=None) -> list:
+  def Load(path:str, delimiter:str=",", types:dict=None, fix:bool|None=None, onefile_pack:bool|None=None) -> list:
     path = path.removesuffix(".csv") + ".csv"
-    if fix is None: fix = FIX_PATH
-    if fix: path = FixPath(path)
-    if not os.path.exists(path):
-      return []
+    path = FixPath(path, fix, onefile_pack)
+    if not os.path.exists(path): return []
     try:
       with open(path, "r", encoding="utf-8") as file:
         reader = csv.DictReader(file, delimiter=delimiter)
@@ -127,8 +223,7 @@ class CSV:
   @staticmethod
   def AddRow(path:str, datarow:dict|list=[], fix:bool|None=None):
     path = path.removesuffix(".csv") + ".csv"
-    if fix is None: fix = FIX_PATH
-    if fix: path = FixPath(path)
+    path = FixPath(path, fix)
     file_exists = os.path.isfile(path)
     with open(path, "a", newline="", encoding="utf-8") as csv_file:
       if isinstance(datarow, dict):
@@ -146,8 +241,7 @@ class CSV:
   @staticmethod
   def Save(path:str,data:list[dict]|list[list],field_names:list=None, fix:bool|None=None):
     path = path.removesuffix(".csv") + ".csv"
-    if fix is None: fix = FIX_PATH
-    if fix: path = FixPath(path)
+    path = FixPath(path, fix)
     with open(path, "w", newline="", encoding="utf-8") as csv_file:
       if all(isinstance(row, dict) for row in data):
         field_names = field_names or list(data[0].keys())
@@ -166,12 +260,10 @@ class CSV:
 class JSON:
 
   @staticmethod
-  def Load(path:str, otherwise: None|list|dict=None, fix:bool|None=None) -> dict|list|None:
+  def Load(path:str, otherwise: None|list|dict=None, fix:bool|None=None, onefile_pack:bool|None=None) -> dict|list|None:
     path = path.removesuffix(".json") + ".json"
-    if fix is None: fix = FIX_PATH
-    if fix: path = FixPath(path)
-    if not os.path.isfile(path):
-      return otherwise
+    path = FixPath(path, fix, onefile_pack)
+    if not os.path.isfile(path): return otherwise
     try:
       with open(path, "r", encoding="utf-8") as file:
         content = file.read()
@@ -183,8 +275,7 @@ class JSON:
   @staticmethod
   def Save(path:str, content:dict|list|Any, fix:bool|None=None):
     path = path.removesuffix(".json") + ".json"
-    if fix is None: fix = FIX_PATH
-    if fix: path = FixPath(path)
+    path = FixPath(path, fix)
     try:
       with open(path, "w", encoding="utf-8") as file:
         json.dump(content, file, separators=(",", ":"))
@@ -194,8 +285,7 @@ class JSON:
   @staticmethod
   def SavePretty(path:str, content:dict|list|Any, fix:bool|None=None):
     path = path.removesuffix(".json") + ".json"
-    if fix is None: fix = FIX_PATH
-    if fix: path = FixPath(path)
+    path = FixPath(path, fix)
     try:
       with open(path, "w", encoding="utf-8") as file:
         json.dump(content, file, indent=2, ensure_ascii=False)
@@ -203,6 +293,27 @@ class JSON:
       print(f"Error saving JSON file '{path}': {e}")
 
 #------------------------------------------------------------------------------ Str
+
+def ReplaceStart(text:str, find:str, replace:str, border:bool=False):
+  pattern = rf"(?m)^{re.escape(find)}{"\b" if border else ""}"
+  return re.sub(pattern, replace, text)
+
+def ReplaceEnd(text: str, find: str, replace: str, border:bool=False) -> str:
+  pattern = rf"(?m){"\b" if border else ""}{re.escape(find)}$"
+  return re.sub(pattern, replace, text)
+
+def ReplaceMap(subject:str|list|dict, mapping:dict, prefix:str="", suffix:str=""):
+  # Replace keys in the format prefix + key + suffix with values from the dictionary
+  if isinstance(subject, str):
+    for search, replace in mapping.items():
+        subject = subject.replace(f"{prefix}{search}{suffix}", str(replace))
+    return subject
+  elif isinstance(subject, list):
+    return [ReplaceMap(item, mapping, prefix, suffix) for item in subject]
+  elif isinstance(subject, dict):
+    return {key: ReplaceMap(value, mapping, prefix, suffix) for key, value in subject.items()}
+  else:
+    return subject
 
 def SplitStr(string:str, split:str= " ", string_char:str='"', escape_char:str = "\\") -> list:
   def trim(value:str) -> str:
@@ -285,19 +396,6 @@ def SplitSQL(sqls):
       i += 1
   return output
 
-def ReplaceMap(subject:str|list|dict, mapping:dict, prefix:str="", suffix:str=""):
-  # Replace keys in the format prefix + key + suffix with values from the dictionary
-  if isinstance(subject, str):
-    for search, replace in mapping.items():
-        subject = subject.replace(f"{prefix}{search}{suffix}", str(replace))
-    return subject
-  elif isinstance(subject, list):
-    return [ReplaceMap(item, mapping, prefix, suffix) for item in subject]
-  elif isinstance(subject, dict):
-    return {key: ReplaceMap(value, mapping, prefix, suffix) for key, value in subject.items()}
-  else:
-    return subject
-
 def isUniform(lst:Iterable):
   return len(set(lst)) == 1
 
@@ -321,7 +419,8 @@ class IcoSymbols():
   WRN = "💡"
   OK  = "✅"
   DOC = "📄"
-  YEA = "🚀"
+  RUN = "🚀"
+  GAP = "\u3164"
 
 class IcoText():
   INF = f"{Color.BLUE}INF{Color.END}"
@@ -329,6 +428,9 @@ class IcoText():
   WRN = f"{Color.YELLOW}WRN{Color.END}"
   OK  = f"{Color.GREEN}INF{Color.END}"
   DOC = f"{Color.MAGENTA}INF{Color.END}"
-  YEA = f"{Color.GREEN}YEA{Color.END}"
+  RUN = f"{Color.ORANGE}RUN{Color.END}"
+  GAP = "   "
+
+YES_NO = f"[{Color.GREEN}TAK{Color.END}/{Color.RED}NIE{Color.END}]"
   
 #------------------------------------------------------------------------------

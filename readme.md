@@ -97,3 +97,11 @@ py main.py --update
 ./libpysync.exe -u  
 libpysync -u
 ```
+
+Podczas uruchomienia programu bez aktualizacji _(bez flagi `-u`, `--update`)_, dla każdej pary plików z rozbieżnościami generowane są tagi. Można je później wykorzystać do szybkiego podejrzenia różnic między plikami używając flagi `-d`, `--diff` 
+
+```bash
+py main.py -d [lasted].[obsolete]  # for example: 1.2
+./libpysync.exe -d [lasted].[obsolete]  # for example: 1.2
+libpysync -d [lasted].[obsolete]  # for example: 1.2
+```

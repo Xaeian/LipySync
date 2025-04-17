@@ -430,7 +430,5 @@ class IcoText():
   DOC = f"{Color.MAGENTA}INF{Color.END}"
   RUN = f"{Color.ORANGE}RUN{Color.END}"
   GAP = "   "
-
-YES_NO = f"[{Color.GREEN}TAK{Color.END}/{Color.RED}NIE{Color.END}]"
   
 #------------------------------------------------------------------------------

@@ -16,6 +16,7 @@ parser.add_argument("-v", "--version", action="store_true", help="Program versio
 args = parser.parse_args()
 
 if args.version:
+  # 1.2.2: FIX load file
   # 1.2.1: Compare files -d --diff
   # 1.2.0: Auto-detect file/folder + info + paths unique lib only
   # 1.1.0: Union files for SyncFolder
@@ -158,8 +159,8 @@ elif not args.update:
     from rich.console import Console
     from rich.syntax import Syntax
     diff_print = ""
-    obsolete_file = xn.TXT.LoadLines(diff["obsolete_file"])
-    lasted_file = xn.TXT.LoadLines(diff["lasted_file"])
+    obsolete_file = xn.FILE.LoadLines(diff["obsolete_file"])
+    lasted_file = xn.FILE.LoadLines(diff["lasted_file"])
     diff = difflib.unified_diff(
       obsolete_file,
       lasted_file,
